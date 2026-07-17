@@ -1,7 +1,7 @@
 import postgres from "postgres";
 
 if (!process.env.DATABASE_URL) {
-  console.error("Missing DATABASE_URL. Add your Supabase connection string to .env.");
+  console.error("Missing DATABASE_URL. Add your connection string to .env.");
   process.exit(1);
 }
 
