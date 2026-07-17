@@ -2,11 +2,16 @@ import "dotenv/config";
 import readline from "node:readline/promises";
 import type { ModelMessage } from "ai";
 import { runAgent } from "./agent.js";
+import { sql, ensureSchema } from "./db.js";
+import { getProfile, formatProfileContext } from "./profile.js";
 
 if (!process.env.OPENAI_API_KEY) {
   console.error("Missing OPENAI_API_KEY. Add it to your .env file.");
   process.exit(1);
 }
+
+await ensureSchema();
+const profileContext = formatProfileContext(await getProfile());
 
 const rl = readline.createInterface({ input: process.stdin, output: process.stdout });
 const history: ModelMessage[] = [];
@@ -21,7 +26,7 @@ while (true) {
 
   history.push({ role: "user", content: input });
 
-  const result = runAgent(history);
+  const result = runAgent(history, profileContext);
 
   process.stdout.write("\nplanner> ");
   for await (const part of result.fullStream) {
@@ -45,4 +50,5 @@ while (true) {
 }
 
 rl.close();
+await sql.end();
 console.log("Safe travels! 👋");
