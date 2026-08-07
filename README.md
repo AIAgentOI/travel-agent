@@ -31,6 +31,8 @@ ui/       Vite + React chat UI
 
 ## Setup
 
+This repo isn't set up as npm workspaces: root, `server/`, and `ui/` are three independent packages, each with their own dependencies, so each needs its own install:
+
 ```bash
 npm install
 npm --prefix server install
