@@ -45,6 +45,21 @@ export async function upsertProfile(partial: TravelerProfile): Promise<TravelerP
   return fromRow(rows[0]);
 }
 
+export async function replaceProfile(profile: TravelerProfile): Promise<TravelerProfile> {
+  const rows = await sql<ProfileRow[]>`
+    insert into traveler_profile (id, budget_style, interests, pace, travelers, updated_at)
+    values (true, ${profile.budgetStyle ?? null}, ${profile.interests ?? null}, ${profile.pace ?? null}, ${profile.travelers ?? null}, now())
+    on conflict (id) do update set
+      budget_style = excluded.budget_style,
+      interests = excluded.interests,
+      pace = excluded.pace,
+      travelers = excluded.travelers,
+      updated_at = now()
+    returning budget_style, interests, pace, travelers
+  `;
+  return fromRow(rows[0]);
+}
+
 export function formatProfileContext(profile: TravelerProfile | null): string {
   if (!profile) return "";
   const known: string[] = [];
