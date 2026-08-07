@@ -1,8 +1,29 @@
 # AI Travel Planner Agent
 
-An LLM-powered travel planning assistant. It gathers your trip requirements conversationally, calls real-data tools, and produces a personalized day-by-day itinerary - through a browser chat UI with persistent, resumable conversations, an editable memory profile, theme options, and a responsive mobile layout.
+**Live:** [travel-agent-axex.onrender.com](https://travel-agent-axex.onrender.com/)
 
-**Stack:** TypeScript + [Vercel AI SDK](https://ai-sdk.dev) with the OpenAI provider (`gpt-5-mini`) - Express API server, Postgres, and a Vite + React frontend.
+An AI agent that plans trips based on your preferences. It gathers your requirements, calls real-data tools, and produces a personalized day-by-day itinerary.
+
+**Features**
+
+- Real-data tools - live weather, geocoding, attractions, budget estimates
+- Agent-managed memory - remembers your budget style, interests, and pace across sessions, editable any time
+- Streaming responses with live tool-call indicators
+- Markdown itinerary rendering with day-by-day plans and budget tables
+- Resumable conversations with auto-generated titles
+- Theme options
+- Responsive mobile layout
+- Per-user accounts with hashed passwords (bcrypt)
+
+**Stack**
+
+| Layer | Tech |
+|---|---|
+| Agent | [Vercel AI SDK](https://ai-sdk.dev), OpenAI provider |
+| Backend | TypeScript, Express |
+| Frontend | Vite, React |
+| Database | Postgres ([Neon](https://neon.tech)) - conversations, memory profile |
+| Deployment | [Render](https://render.com), single service |
 
 ## Structure
 
@@ -46,7 +67,7 @@ OPENAI_API_KEY=your_api_key_here
 DATABASE_URL=postgres://...
 ```
 
-`DATABASE_URL` is a Postgres connection string (e.g. a Supabase project's connection string) used to persist the traveler profile and chat conversations across sessions. Tables are created automatically on first run.
+`DATABASE_URL` is a Postgres connection string (e.g. a Neon project's connection string) used to persist the traveler profile and chat conversations across sessions. Tables are created automatically on first run.
 
 ## Run
 
