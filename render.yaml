@@ -2,9 +2,10 @@ services:
   - type: web
     name: travel-agent
     runtime: node
-    plan: free
-    buildCommand: npm run build
+    rootDir: server
+    buildCommand: npm install
     startCommand: npm start
+    plan: free
     healthCheckPath: /health
     envVars:
       - key: NODE_ENV
