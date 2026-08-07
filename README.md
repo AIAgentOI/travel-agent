@@ -25,6 +25,8 @@ An AI agent that plans trips based on your preferences. It gathers your requirem
 | Database | Postgres ([Neon](https://neon.tech)) - conversations, memory profile |
 | Deployment | [Render](https://render.com), single service |
 
+Render and Neon's free tiers idle/suspend after inactivity, so a scheduled [GitHub Actions workflow](.github/workflows/keep-alive.yml) pings the app every 5 minutes to keep both awake.
+
 ## Structure
 
 ```
