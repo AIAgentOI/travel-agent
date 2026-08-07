@@ -23,18 +23,21 @@ function fromRow(row: ProfileRow): TravelerProfile {
   };
 }
 
-export async function getProfile(): Promise<TravelerProfile | null> {
+export async function getProfile(userId: string): Promise<TravelerProfile | null> {
   const rows = await sql<ProfileRow[]>`
-    select budget_style, interests, pace, travelers from traveler_profile where id = true
+    select budget_style, interests, pace, travelers from traveler_profile where user_id = ${userId}
   `;
   return rows[0] ? fromRow(rows[0]) : null;
 }
 
-export async function upsertProfile(partial: TravelerProfile): Promise<TravelerProfile> {
+export async function upsertProfile(
+  userId: string,
+  partial: TravelerProfile,
+): Promise<TravelerProfile> {
   const rows = await sql<ProfileRow[]>`
-    insert into traveler_profile (id, budget_style, interests, pace, travelers, updated_at)
-    values (true, ${partial.budgetStyle ?? null}, ${partial.interests ?? null}, ${partial.pace ?? null}, ${partial.travelers ?? null}, now())
-    on conflict (id) do update set
+    insert into traveler_profile (user_id, budget_style, interests, pace, travelers, updated_at)
+    values (${userId}, ${partial.budgetStyle ?? null}, ${partial.interests ?? null}, ${partial.pace ?? null}, ${partial.travelers ?? null}, now())
+    on conflict (user_id) do update set
       budget_style = coalesce(excluded.budget_style, traveler_profile.budget_style),
       interests = coalesce(excluded.interests, traveler_profile.interests),
       pace = coalesce(excluded.pace, traveler_profile.pace),
@@ -45,11 +48,14 @@ export async function upsertProfile(partial: TravelerProfile): Promise<TravelerP
   return fromRow(rows[0]);
 }
 
-export async function replaceProfile(profile: TravelerProfile): Promise<TravelerProfile> {
+export async function replaceProfile(
+  userId: string,
+  profile: TravelerProfile,
+): Promise<TravelerProfile> {
   const rows = await sql<ProfileRow[]>`
-    insert into traveler_profile (id, budget_style, interests, pace, travelers, updated_at)
-    values (true, ${profile.budgetStyle ?? null}, ${profile.interests ?? null}, ${profile.pace ?? null}, ${profile.travelers ?? null}, now())
-    on conflict (id) do update set
+    insert into traveler_profile (user_id, budget_style, interests, pace, travelers, updated_at)
+    values (${userId}, ${profile.budgetStyle ?? null}, ${profile.interests ?? null}, ${profile.pace ?? null}, ${profile.travelers ?? null}, now())
+    on conflict (user_id) do update set
       budget_style = excluded.budget_style,
       interests = excluded.interests,
       pace = excluded.pace,

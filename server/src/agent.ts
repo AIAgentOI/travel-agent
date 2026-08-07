@@ -1,14 +1,14 @@
 import { openai } from "@ai-sdk/openai";
 import { streamText, generateText, stepCountIs, type ModelMessage } from "ai";
 import { buildSystemPrompt } from "./prompts.js";
-import { travelTools } from "./tools/index.js";
+import { createTravelTools } from "./tools/index.js";
 
-export function runAgent(messages: ModelMessage[], profileContext: string) {
+export function runAgent(messages: ModelMessage[], profileContext: string, userId: string) {
   return streamText({
     model: openai("gpt-5-mini"),
     system: buildSystemPrompt(profileContext),
     messages,
-    tools: travelTools,
+    tools: createTravelTools(userId),
     stopWhen: stepCountIs(10),
   });
 }

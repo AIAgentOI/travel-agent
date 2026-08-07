@@ -16,21 +16,25 @@ export function Sidebar({
   activeId,
   open,
   showNew,
+  userEmail,
   onSelect,
   onNew,
   onDelete,
   onOpenProfile,
   onClose,
+  onLogout,
 }: {
   conversations: ConversationSummary[];
   activeId: string | null;
   open: boolean;
   showNew: boolean;
+  userEmail: string;
   onSelect: (id: string) => void;
   onNew: () => void;
   onDelete: (id: string) => void;
   onOpenProfile: () => void;
   onClose: () => void;
+  onLogout: () => void;
 }) {
   return (
     <div className={`sidebar ${open ? "sidebar-open" : ""}`}>
@@ -74,6 +78,14 @@ export function Sidebar({
         <span className="profile-avatar">☺</span>
         <span>Profile &amp; memory</span>
       </button>
+      <div className="account-row">
+        <span className="account-email" title={userEmail}>
+          {userEmail}
+        </span>
+        <button className="account-logout" onClick={onLogout}>
+          Log out
+        </button>
+      </div>
     </div>
   );
 }
