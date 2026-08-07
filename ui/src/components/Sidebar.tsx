@@ -15,6 +15,7 @@ export function Sidebar({
   conversations,
   activeId,
   open,
+  showNew,
   onSelect,
   onNew,
   onDelete,
@@ -24,6 +25,7 @@ export function Sidebar({
   conversations: ConversationSummary[];
   activeId: string | null;
   open: boolean;
+  showNew: boolean;
   onSelect: (id: string) => void;
   onNew: () => void;
   onDelete: (id: string) => void;
@@ -39,9 +41,11 @@ export function Sidebar({
           ×
         </button>
       </div>
-      <button className="new-chat" onClick={onNew}>
-        + New trip
-      </button>
+      {showNew && (
+        <button className="new-chat" onClick={onNew}>
+          + New trip
+        </button>
+      )}
       <div className="conversation-list">
         {conversations.map((c) => (
           <div

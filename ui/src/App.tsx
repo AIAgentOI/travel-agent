@@ -111,6 +111,7 @@ export default function App() {
         conversations={conversations}
         activeId={activeId}
         open={sidebarOpen}
+        showNew={conversations.length > 0}
         onSelect={selectConversation}
         onNew={handleNew}
         onDelete={handleDelete}
