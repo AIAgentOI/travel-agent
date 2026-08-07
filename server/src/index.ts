@@ -44,7 +44,8 @@ if (process.env.NODE_ENV === "production") {
   const __dirname = path.dirname(fileURLToPath(import.meta.url));
   const uiDist = path.join(__dirname, "../../ui/dist");
   app.use(express.static(uiDist));
-  app.get("*", (_req, res) => {
+  // Express 5's router requires a named wildcard, not a bare "*".
+  app.get("/*splat", (_req, res) => {
     res.sendFile(path.join(uiDist, "index.html"));
   });
 }
