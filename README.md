@@ -4,11 +4,9 @@
 
 An AI agent that plans trips based on your preferences. It gathers your requirements, calls real-data tools, and produces a personalized day-by-day itinerary.
 
-<p align="center">
-  <img src="docs/screenshots/chat.png" width="100%" alt="Chat with live tool-call indicators" />
-  <br/>
-  <img src="docs/screenshots/itinerary.png" width="100%" alt="Generated day-by-day itinerary" />
-</p>
+![Chat with live tool-call indicators](docs/screenshots/chat.png)
+
+![Generated day-by-day itinerary](docs/screenshots/itinerary.png)
 
 **Features**
 
