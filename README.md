@@ -7,7 +7,7 @@ An AI agent that plans trips based on your preferences. It gathers your requirem
 | |
 |:---:|
 | ![Chat with live tool-call indicators](docs/screenshots/initial-chat.png) |
-| ![Generated day-by-day itinerary](docs/screenshots/itinerary.png) |
+| ![Generated day-by-day itinerary](docs/screenshots/plan.png) |
 
 **Features**
 
