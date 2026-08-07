@@ -22,7 +22,7 @@ app.use(express.json({ limit: "5mb" }));
 app.use(cookieParser());
 
 // Unauthenticated health check. An external uptime pinger hits this to keep
-// the Render service from idling; the query keeps Supabase from pausing.
+// the Render service from idling; the query keeps Neon from suspending.
 app.get("/health", async (_req, res) => {
   try {
     await sql`select 1`;
