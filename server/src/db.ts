@@ -40,3 +40,13 @@ export async function ensureSchema() {
       on messages (conversation_id, created_at)
   `;
 }
+
+const FIVE_DAYS_MS = 5 * 24 * 60 * 60 * 1000;
+
+// Supabase (and similar free-tier hosts) pause projects after a period of
+// inactivity. A trivial periodic query keeps the connection/project alive.
+export function startKeepalive() {
+  setInterval(() => {
+    sql`select 1`.catch((err) => console.error("Keepalive query failed:", err));
+  }, FIVE_DAYS_MS);
+}

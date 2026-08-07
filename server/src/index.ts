@@ -1,6 +1,6 @@
 import "dotenv/config";
 import express from "express";
-import { ensureSchema } from "./db.js";
+import { ensureSchema, startKeepalive } from "./db.js";
 import { chatRouter } from "./routes/chat.js";
 import { conversationsRouter } from "./routes/conversations.js";
 import { profileRouter } from "./routes/profile.js";
@@ -11,6 +11,7 @@ if (!process.env.OPENAI_API_KEY) {
 }
 
 await ensureSchema();
+startKeepalive();
 
 const app = express();
 app.use(express.json({ limit: "5mb" }));
