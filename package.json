@@ -7,7 +7,9 @@
     "dev:server": "npm --prefix server run dev",
     "dev:ui": "npm --prefix ui run dev",
     "dev": "concurrently -n server,ui -c blue,magenta \"npm run dev:server\" \"npm run dev:ui\"",
-    "typecheck": "npm --prefix server run typecheck && npm --prefix ui run typecheck"
+    "typecheck": "npm --prefix server run typecheck && npm --prefix ui run typecheck",
+    "build": "npm --prefix server install && npm --prefix ui install && npm --prefix ui run build",
+    "start": "npm --prefix server start"
   },
   "devDependencies": {
     "concurrently": "^9.1.2"
