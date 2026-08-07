@@ -1,4 +1,6 @@
 import "dotenv/config";
+import path from "node:path";
+import { fileURLToPath } from "node:url";
 import express from "express";
 import cookieParser from "cookie-parser";
 import { ensureSchema, sql } from "./db.js";
@@ -36,7 +38,18 @@ app.use("/api", requireAuth, chatRouter);
 app.use("/api", requireAuth, conversationsRouter);
 app.use("/api", requireAuth, profileRouter);
 
-const port = 3001;
+// In production the UI is built into ui/dist and served from the same
+// origin as the API, so no CORS/cross-site cookie config is needed.
+if (process.env.NODE_ENV === "production") {
+  const __dirname = path.dirname(fileURLToPath(import.meta.url));
+  const uiDist = path.join(__dirname, "../../ui/dist");
+  app.use(express.static(uiDist));
+  app.get("*", (_req, res) => {
+    res.sendFile(path.join(uiDist, "index.html"));
+  });
+}
+
+const port = process.env.PORT ?? 3001;
 app.listen(port, () => {
   console.log(`Travel agent server listening on http://localhost:${port}`);
 });
