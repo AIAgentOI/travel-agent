@@ -4,11 +4,15 @@ import {
   listConversations,
   getConversation,
   deleteConversation,
+  getMe,
+  logout,
   type ConversationSummary,
+  type AuthUser,
 } from "./api.js";
 import { Sidebar } from "./components/Sidebar.js";
 import { ChatView } from "./components/ChatView.js";
 import { ProfileModal, type Theme } from "./components/ProfileModal.js";
+import { AuthForm } from "./components/AuthForm.js";
 
 function initialTheme(): Theme {
   const stored = localStorage.getItem("theme");
@@ -16,6 +20,10 @@ function initialTheme(): Theme {
 }
 
 export default function App() {
+  const [user, setUser] = useState<AuthUser | null>(null);
+  const [authChecking, setAuthChecking] = useState(true);
+  const loadedForUser = useRef<string | null>(null);
+
   const [conversations, setConversations] = useState<ConversationSummary[]>([]);
   // null = draft chat: nothing in the DB until the user actually sends a message
   const [activeId, setActiveId] = useState<string | null>(null);
@@ -28,12 +36,17 @@ export default function App() {
   const [profileOpen, setProfileOpen] = useState(false);
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [theme, setTheme] = useState<Theme>(initialTheme);
-  const didInit = useRef(false);
 
   useEffect(() => {
     document.documentElement.dataset.theme = theme;
     localStorage.setItem("theme", theme);
   }, [theme]);
+
+  useEffect(() => {
+    getMe()
+      .then(setUser)
+      .finally(() => setAuthChecking(false));
+  }, []);
 
   async function refreshConversations() {
     const list = await listConversations();
@@ -42,15 +55,16 @@ export default function App() {
   }
 
   useEffect(() => {
-    if (didInit.current) return;
-    didInit.current = true;
+    if (!user || loadedForUser.current === user.id) return;
+    loadedForUser.current = user.id;
+    setLoading(true);
     refreshConversations()
       .then(async (list) => {
         if (list.length > 0) await selectConversation(list[0].id);
       })
       .finally(() => setLoading(false));
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+  }, [user]);
 
   async function selectConversation(id: string) {
     const { messages } = await getConversation(id);
@@ -101,6 +115,23 @@ export default function App() {
     void refreshConversations();
   }, []);
 
+  async function handleLogout() {
+    await logout();
+    loadedForUser.current = null;
+    setUser(null);
+    setConversations([]);
+    startDraft();
+    setProfileOpen(false);
+  }
+
+  if (authChecking) {
+    return <div className="app-loading">Loading…</div>;
+  }
+
+  if (!user) {
+    return <AuthForm onAuthenticated={setUser} />;
+  }
+
   if (loading) {
     return <div className="app-loading">Loading…</div>;
   }
@@ -112,6 +143,7 @@ export default function App() {
         activeId={activeId}
         open={sidebarOpen}
         showNew={conversations.length > 0}
+        userEmail={user.email}
         onSelect={selectConversation}
         onNew={handleNew}
         onDelete={handleDelete}
@@ -120,6 +152,7 @@ export default function App() {
           setSidebarOpen(false);
         }}
         onClose={() => setSidebarOpen(false)}
+        onLogout={handleLogout}
       />
       {sidebarOpen && <div className="sidebar-backdrop" onClick={() => setSidebarOpen(false)} />}
       <ChatView

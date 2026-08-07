@@ -19,22 +19,25 @@ interface MessageRow {
 
 export const conversationsRouter = Router();
 
-conversationsRouter.get("/conversations", async (_req, res) => {
+conversationsRouter.get("/conversations", async (req, res) => {
   const rows = await sql<ConversationRow[]>`
-    select id, title, created_at, updated_at from conversations order by updated_at desc
+    select id, title, created_at, updated_at from conversations
+    where user_id = ${req.userId!}
+    order by updated_at desc
   `;
   res.json(rows);
 });
 
-conversationsRouter.post("/conversations", async (_req, res) => {
+conversationsRouter.post("/conversations", async (req, res) => {
   const id = crypto.randomUUID();
-  await sql`insert into conversations (id) values (${id})`;
+  await sql`insert into conversations (id, user_id) values (${id}, ${req.userId!})`;
   res.status(201).json({ id });
 });
 
 conversationsRouter.get("/conversations/:id", async (req, res) => {
   const [conversation] = await sql<ConversationRow[]>`
-    select id, title, created_at, updated_at from conversations where id = ${req.params.id}
+    select id, title, created_at, updated_at from conversations
+    where id = ${req.params.id} and user_id = ${req.userId!}
   `;
   if (!conversation) {
     res.status(404).json({ error: "Conversation not found" });
@@ -52,9 +55,14 @@ conversationsRouter.get("/conversations/:id", async (req, res) => {
 });
 
 conversationsRouter.delete("/conversations/:id", async (req, res) => {
-  await sql`delete from conversations where id = ${req.params.id}`;
+  await sql`delete from conversations where id = ${req.params.id} and user_id = ${req.userId!}`;
   res.status(204).end();
 });
+
+export async function conversationBelongsToUser(id: string, userId: string): Promise<boolean> {
+  const [row] = await sql`select 1 from conversations where id = ${id} and user_id = ${userId}`;
+  return Boolean(row);
+}
 
 function firstUserText(messages: UIMessage[]): string | null {
   const firstUserMessage = messages.find((m) => m.role === "user");
