@@ -116,7 +116,7 @@ export function ChatView({
         <input
           value={input}
           onChange={(e) => setInput(e.target.value)}
-          placeholder="Plan a 5-day trip to Lisbon…"
+          placeholder={messages.length === 0 ? "Where would you like to go?" : "Ask a follow-up…"}
           disabled={isBusy}
         />
         <button type="submit" disabled={isBusy || !input.trim()}>
