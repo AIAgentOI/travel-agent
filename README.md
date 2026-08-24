@@ -28,6 +28,7 @@ An AI agent that plans trips based on your preferences. It gathers your requirem
 | Backend | TypeScript, Express |
 | Frontend | Vite, React |
 | Database | Postgres ([Neon](https://neon.tech)) - conversations, memory profile |
+| Evals | [Braintrust](https://braintrust.dev) + autoevals - conversation-title generation so far, more suites landing incrementally |
 | Deployment | [Render](https://render.com), single service |
 
 Render and Neon's free tiers idle/suspend after inactivity, so a scheduled [GitHub Actions workflow](.github/workflows/keep-alive.yml) pings the app every 5 minutes to keep both awake.
@@ -35,8 +36,9 @@ Render and Neon's free tiers idle/suspend after inactivity, so a scheduled [GitH
 ## Structure
 
 ```
-server/   Express API - agent logic, tools, Postgres, streaming chat endpoint
-ui/       Vite + React chat UI
+server/         Express API - agent logic, tools, Postgres, streaming chat endpoint
+server/evals/   Braintrust eval suites, fixtures, and scorers
+ui/             Vite + React chat UI
 ```
 
 ## Tools
@@ -72,7 +74,10 @@ Create a `.env` file in `server/`:
 ```env
 OPENAI_API_KEY=your_api_key_here
 DATABASE_URL=postgres://...
+BRAINTRUST_API_KEY=your_braintrust_key_here
 ```
+
+`BRAINTRUST_API_KEY` is only needed to run the [evals](#evals) - the app itself doesn't use it.
 
 `DATABASE_URL` is a Postgres connection string (e.g. a Neon project's connection string) used to persist the traveler profile and chat conversations across sessions. Tables are created automatically on first run.
 
@@ -97,6 +102,29 @@ Plan a 10-day trip to Lisbon in October with a mid-range budget. I enjoy food, a
 The agent geocodes the destination, checks the forecast, pulls POIs matching your interests, estimates costs, and writes a day-by-day markdown itinerary with a budget table. Follow up conversationally ("make day 2 more relaxed") - it keeps the full conversation history.
 
 It also remembers your budget style, interests, pace, and traveler count across sessions (via Postgres) - state them once and future conversations won't re-ask. Check or edit what it has learned any time from **Profile & memory** in the sidebar - useful if a one-time preference (e.g. a single mountain trip) shouldn't be treated as a standing preference.
+
+## Evals
+
+[Braintrust](https://braintrust.dev) suites live in `server/evals/`, one file per thing that can regress independently. First one up:
+
+| Suite | File | Grades |
+|---|---|---|
+| `conversation-titles` | `title.eval.ts` | The sidebar title call - one model call per case, no tools, so it's also the cheap smoke test that credentials are wired up |
+
+```bash
+npm run eval                                                # everything under evals/
+cd server && npx braintrust eval --env-file .env evals/title.eval.ts   # just this suite
+```
+
+Experiments are pushed to the `travel-agent` project in Braintrust. Add `--no-send-logs` to score locally without recording an experiment, or `--watch` (also `npm --prefix server run eval:watch`) to re-run on save while iterating on a prompt.
+
+### Scorers
+
+Two deterministic checks in `evals/scorers/title.ts` (word count, no quotes, no trailing punctuation, no markdown, destination present), plus one LLM judge in `evals/scorers/judges.ts` for the part a regex can't see: does the title actually read as descriptive, not just well-formatted. Judges run on `gpt-4o` by default, deliberately not the `gpt-5-mini` under test - grading a model with itself tends to flatter it. Override with `EVAL_JUDGE_MODEL`.
+
+Scorers return `null` rather than `0` for cases that make no claim about them - and Braintrust averages only the non-null scores.
+
+More suites (tool-call trajectory, itinerary quality) are landing incrementally.
 
 ## Roadmap
 
