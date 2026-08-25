@@ -7,7 +7,9 @@
   "scripts": {
     "start": "tsx src/index.ts",
     "dev": "tsx watch src/index.ts",
-    "typecheck": "tsc --noEmit"
+    "typecheck": "tsc --noEmit",
+    "eval": "braintrust eval --env-file .env evals",
+    "eval:watch": "braintrust eval --env-file .env --watch evals"
   },
   "dependencies": {
     "@ai-sdk/openai": "^4.0.15",
@@ -25,6 +27,9 @@
     "@types/cookie-parser": "^1.4.10",
     "@types/express": "^5.0.1",
     "@types/node": "^26.1.1",
+    "autoevals": "^0.0.132",
+    "braintrust": "^3.28.0",
+    "openai": "^6.49.0",
     "typescript": "^7.0.2"
   }
 }
