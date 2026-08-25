@@ -28,7 +28,7 @@ An AI agent that plans trips based on your preferences. It gathers your requirem
 | Backend | TypeScript, Express |
 | Frontend | Vite, React |
 | Database | Postgres ([Neon](https://neon.tech)) - conversations, memory profile |
-| Evals | [Braintrust](https://braintrust.dev) + autoevals - conversation-title generation so far, more suites landing incrementally |
+| Evals | [Braintrust](https://braintrust.dev) + autoevals - conversation-title generation and itinerary quality so far, tool-trajectory landing next |
 | Deployment | [Render](https://render.com), single service |
 
 Render and Neon's free tiers idle/suspend after inactivity, so a scheduled [GitHub Actions workflow](.github/workflows/keep-alive.yml) pings the app every 5 minutes to keep both awake.
@@ -105,26 +105,40 @@ It also remembers your budget style, interests, pace, and traveler count across 
 
 ## Evals
 
-[Braintrust](https://braintrust.dev) suites live in `server/evals/`, one file per thing that can regress independently. First one up:
+[Braintrust](https://braintrust.dev) suites live in `server/evals/`, one file per thing that can regress independently. A prompt tweak that improves the writing can quietly break slot-filling, so the two are scored separately.
 
 | Suite | File | Grades |
 |---|---|---|
 | `conversation-titles` | `title.eval.ts` | The sidebar title call - one model call per case, no tools, so it's also the cheap smoke test that credentials are wired up |
+| `itinerary-quality` | `itinerary.eval.ts` | The markdown the user actually reads: day coverage, budget table, grounding in tool results |
 
 ```bash
 npm run eval                                                # everything under evals/
-cd server && npx braintrust eval --env-file .env evals/title.eval.ts   # just this suite
+cd server && npx braintrust eval --env-file .env evals/itinerary.eval.ts   # just this suite
 ```
 
 Experiments are pushed to the `travel-agent` project in Braintrust. Add `--no-send-logs` to score locally without recording an experiment, or `--watch` (also `npm --prefix server run eval:watch`) to re-run on save while iterating on a prompt.
 
+### Pinned tool results
+
+The itinerary suite runs the real agent, tools and all - but by default the three network-backed tools (geocoding, forecast, Overpass) are swapped for fixtures in `evals/lib/fixtures.ts`, keyed to four cities with a fixed forecast start date. Only `execute` is replaced - descriptions and input schemas are reused from the real tools, so the model sees the exact tool surface it sees in production.
+
+This matters because Overpass is slow, rate-limited, and occasionally down. Without pinning, a bad Overpass morning is indistinguishable from a prompt regression. `budget` is a pure local calculator, so the real one always runs.
+
+Set `EVAL_LIVE_TOOLS=1` to hit the real endpoints instead - useful as an integration smoke test, not for scored comparisons.
+
 ### Scorers
 
-Two deterministic checks in `evals/scorers/title.ts` (word count, no quotes, no trailing punctuation, no markdown, destination present), plus one LLM judge in `evals/scorers/judges.ts` for the part a regex can't see: does the title actually read as descriptive, not just well-formatted. Judges run on `gpt-4o` by default, deliberately not the `gpt-5-mini` under test - grading a model with itself tends to flatter it. Override with `EVAL_JUDGE_MODEL`.
+Deterministic where possible, in `evals/scorers/`:
 
-Scorers return `null` rather than `0` for cases that make no claim about them - and Braintrust averages only the non-null scores.
+- **Titles** - word count, no quotes, no trailing punctuation, no markdown, destination present.
+- **Itinerary** - is every requested day broken out, is there a budget table with a total, is the flights-excluded caveat present, does the printed trip total match the number the `budget` tool returned, are named places drawn from the attractions results.
 
-More suites (tool-call trajectory, itinerary quality) are landing incrementally.
+Two things resist a regex, so they use LLM judges (`evals/scorers/judges.ts`): whether the title actually reads as descriptive, and whether the itinerary invents venues the POI lookup never returned. Judges run on `gpt-4o` by default, deliberately not the `gpt-5-mini` under test - grading a model with itself tends to flatter it. Override with `EVAL_JUDGE_MODEL`. They call OpenAI directly rather than through the Braintrust AI proxy; set `EVAL_USE_BRAINTRUST_PROXY=1` to switch, once an OpenAI provider is configured in your Braintrust org.
+
+Scorers return `null` rather than `0` for cases that make no claim about them - "this case doesn't test budget arguments" is not the same signal as "the budget arguments were wrong", and Braintrust averages only the non-null scores.
+
+Tool-call trajectory (which tools get called, in what order, with which arguments) is landing next.
 
 ## Roadmap
 

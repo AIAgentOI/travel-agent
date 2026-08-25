@@ -1,8 +1,12 @@
 import { tool } from "ai";
 import { z } from "zod";
-import { upsertProfile } from "../profile.js";
+import type { TravelerProfile } from "../profile.js";
 
-export function createUpdateProfileTool(userId: string) {
+// Injected rather than imported so the agent can be driven without a database
+// (evals pass an in-memory recorder; the server passes the Postgres upsert).
+export type SaveProfile = (partial: TravelerProfile) => Promise<TravelerProfile>;
+
+export function createUpdateProfileTool(save: SaveProfile) {
   return tool({
     description:
       "Save or update the user's persistent traveler profile (budget style, interests, pace, travelers) so future sessions remember it. Call when the user states or confirms a new or changed preference. Only pass the fields that changed.",
@@ -13,7 +17,7 @@ export function createUpdateProfileTool(userId: string) {
       travelers: z.number().int().min(1).max(12).optional(),
     }),
     execute: async (partial) => {
-      const saved = await upsertProfile(userId, partial);
+      const saved = await save(partial);
       return { saved: true, profile: saved };
     },
   });
