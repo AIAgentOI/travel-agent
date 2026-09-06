@@ -9,7 +9,8 @@
     "dev": "tsx watch src/index.ts",
     "typecheck": "tsc --noEmit",
     "eval": "braintrust eval --env-file .env evals",
-    "eval:watch": "braintrust eval --env-file .env --watch evals"
+    "eval:watch": "braintrust eval --env-file .env --watch evals",
+    "ingest": "tsx scripts/ingest-knowledge.ts"
   },
   "dependencies": {
     "@ai-sdk/openai": "^4.0.15",

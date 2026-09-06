@@ -8,6 +8,7 @@ if (!process.env.DATABASE_URL) {
 export const sql = postgres(process.env.DATABASE_URL);
 
 export async function ensureSchema() {
+  await sql`create extension if not exists vector`;
   // Pre-auth dev schema used a global singleton profile/conversations with no
   // owner - incompatible with per-user data. Drop and recreate rather than
   // migrate; there are no real users yet on this project.
@@ -76,5 +77,36 @@ export async function ensureSchema() {
   await sql`
     create index if not exists messages_conversation_idx
       on messages (conversation_id, created_at)
+  `;
+  await sql`
+    create table if not exists travel_experiences (
+      id uuid primary key default gen_random_uuid(),
+      city text not null,
+      country text not null,
+      author_would_return boolean,
+      alternative_places text[] not null default '{}',
+      food text[] not null default '{}',
+      activities text[] not null default '{}',
+      chunk_text text not null,
+      embedding vector(1536),
+      raw jsonb not null,
+      created_at timestamptz not null default now(),
+      updated_at timestamptz not null default now(),
+      unique (city, country)
+    )
+  `;
+  await sql`
+    do $$
+    begin
+      if exists (select 1 from information_schema.columns where table_name = 'travel_experiences' and column_name = 'would_return')
+         and not exists (select 1 from information_schema.columns where table_name = 'travel_experiences' and column_name = 'author_would_return') then
+        alter table travel_experiences rename column would_return to author_would_return;
+      end if;
+    end
+    $$;
+  `;
+  await sql`
+    alter table travel_experiences
+    add column if not exists embedding vector(1536)
   `;
 }
