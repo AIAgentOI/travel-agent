@@ -1,0 +1,68 @@
+[
+    {
+        "city": "Santiago",
+        "country": "Chile",
+        "would_return": "yes",
+        "alternative_places": [],
+        "food": [
+            "Cazuela"
+        ],
+        "activities": [
+            "Termas Valle de Colina hot springs tour",
+            "Sky Costanera",
+            "Parque Almagro outdoor gym",
+            "Historic Center",
+            "Plaza de Armas",
+            "San Francisco Church",
+            "Santiago Metropolitan Cathedral",
+            "Cerro San Cristóbal",
+            "Cerro Santa Lucía",
+            "Normandie Art Cinema",
+            "Iglesia de los Sacramentinos",
+            "Constitution Square",
+            "Fernández Concha Gallery",
+            "Gabriela Mistral Cultural Center",
+            "La Moneda Cultural Center",
+            "National Library of Chile",
+            "Museum of Contemporary Art",
+            "Museum of Fine Arts"
+        ],
+        "chunk_text": "Santiago, Chile. Pros: Good apartment prices, dry climate with no mold issues. Cons: Food and restaurant prices are relatively high. Would return: Yes. Activities: a hot springs tour in the Andes with a BBQ and stargazing (Termas Valle de Colina), Sky Costanera (the tallest building in South America at about 300 meters), an outdoor workout area in Parque Almagro, the Historic Center, Plaza de Armas, San Francisco Church, the Santiago Metropolitan Cathedral, Cerro San Cristóbal, Cerro Santa Lucía, Normandie Art Cinema (one of the few theaters showing films in English or classic movies), Iglesia de los Sacramentinos, Constitution Square, Fernández Concha Gallery, Gabriela Mistral Cultural Center, La Moneda Cultural Center, the National Library of Chile, the Museum of Contemporary Art, and the Museum of Fine Arts. Food tried: Cazuela, and Pizza Hut. Also played chess with locals in a public park."
+    },
+    {
+        "city": "San Jose",
+        "country": "Costa Rica",
+        "would_return": "yes",
+        "alternative_places": [
+            "Monteverde (cloud forest)",
+            "Dominical (near Uvita, underrated)",
+            "Santa Teresa / Montezuma (Nicoya Peninsula)"
+        ],
+        "food": [
+            "Gallo pinto",
+            "Casado",
+            "Fruit ice cream",
+            "Pizza with tea",
+            "Açaí smoothie",
+            "Coffee from Starbucks' own farm"
+        ],
+        "activities": [
+            "Sabana neighborhood",
+            "Sabana Park",
+            "Costa Rican Art Museum",
+            "Rohrmoser neighborhood",
+            "Parque Nacional",
+            "National Theatre",
+            "Central Market",
+            "Museum of Contemporary Art",
+            "La Destilería nightclub",
+            "Starbucks coffee farm",
+            "Barrio Escalante / Parque Francia",
+            "Franco coffee shop",
+            "Cafeoteca coffee shop",
+            "Guacamole vegan restaurant",
+            "Jardín de Lolita food court"
+        ],
+        "chunk_text": "San Jose, Costa Rica. Pros: Breakfast places open early, around 7am, with good options. High elevation gives comfortable temperatures — around 28C by day, 16C at night — good for sleeping. Cons: Expensive relative to other Latin American destinations. Would return: Yes. Alternatives worth visiting: Monteverde (cloud forest, a very different experience), Dominical (underrated, near Uvita), and Santa Teresa/Montezuma on the Nicoya Peninsula. Local trivia: 'Pura Vida' ('pure life') is a common Costa Rican saying; the country has only two real seasons, dry and rainy. Activities: the Sabana neighborhood and Sabana Park, the Costa Rican Art Museum, the upscale Rohrmoser neighborhood, Parque Nacional, the National Theatre, the Central Market, the Museum of Contemporary Art, checking out nightlife at La Destilería nightclub, visiting the only Starbucks-owned coffee farm in the world, staying in Barrio Escalante near Parque Francia, Franco coffee shop, Cafeoteca coffee shop, Guacamole vegan restaurant, and Jardín de Lolita food court. Food tried: Gallo pinto (traditional breakfast), Casado (traditional lunch), fruit ice cream, a large slice of pizza with tea, an açaí smoothie, and coffee grown and roasted on the Starbucks farm."
+    }
+]
