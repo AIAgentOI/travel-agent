@@ -81,6 +81,23 @@ BRAINTRUST_API_KEY=your_braintrust_key_here
 
 `DATABASE_URL` is a Postgres connection string (e.g. a Neon project's connection string) used to persist the traveler profile and chat conversations across sessions. Tables are created automatically on first run.
 
+### Ingesting knowledge
+
+The server package includes a small ingest script for the destination memory corpus in `server/data/experience.json` when present. If that local file is missing, it falls back to the checked-in example at `server/data/experience.example.json`:
+
+```bash
+cd server
+npm run ingest
+```
+
+Pass a different JSON file path as an argument if you want to ingest another export:
+
+```bash
+npm run ingest -- /path/to/experience.json
+```
+
+The script embeds each `chunk_text` with OpenAI `text-embedding-3-small` and upserts the resulting vectors into `travel_experiences.embedding`, using `city` + `country` as the natural key. The database must support the `pgvector` extension.
+
 ## Run
 
 ```bash
