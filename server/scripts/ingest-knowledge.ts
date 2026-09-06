@@ -11,7 +11,6 @@ const ExperienceSchema = z.object({
   city: z.string().min(1),
   country: z.string().min(1),
   author_would_return: z.union([z.enum(["yes", "no"]), z.string()]).nullable().optional(),
-  would_return: z.union([z.enum(["yes", "no"]), z.string()]).nullable().optional(),
   alternative_places: z.array(z.string()),
   food: z.array(z.string()),
   activities: z.array(z.string()),
@@ -38,10 +37,20 @@ async function resolveInputPath(rawPath: string | undefined): Promise<string> {
   return path.isAbsolute(rawPath) ? rawPath : path.resolve(process.cwd(), rawPath);
 }
 
-function normalizeAuthorWouldReturn(value: Experience["author_would_return"] | Experience["would_return"]): boolean | null {
+function normalizeAuthorWouldReturn(value: Experience["author_would_return"]): boolean | null {
   if (value === "yes") return true;
   if (value === "no") return false;
   return null;
+}
+
+function normalizeInput(value: unknown): unknown {
+  if (!Array.isArray(value)) return value;
+
+  return value.map((record) => {
+    if (!record || typeof record !== "object" || "author_would_return" in record) return record;
+    const { would_return, ...rest } = record as Record<string, unknown>;
+    return { ...rest, author_would_return: would_return };
+  });
 }
 
 async function main() {
@@ -54,7 +63,7 @@ async function main() {
 
   const inputPath = await resolveInputPath(process.argv[2]);
   const raw = await fs.readFile(inputPath, "utf8");
-  const parsed = ExperiencesSchema.parse(JSON.parse(raw));
+  const parsed = ExperiencesSchema.parse(normalizeInput(JSON.parse(raw)));
   const { embeddings } = await embedMany({
     model: openai.embedding("text-embedding-3-small"),
     values: parsed.map((record) => record.chunk_text),
@@ -80,7 +89,7 @@ async function main() {
       values (
         ${record.city},
         ${record.country},
-        ${normalizeAuthorWouldReturn(record.author_would_return ?? record.would_return)},
+        ${normalizeAuthorWouldReturn(record.author_would_return)},
         ${record.alternative_places},
         ${record.food},
         ${record.activities},
