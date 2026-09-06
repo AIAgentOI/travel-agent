@@ -2,7 +2,7 @@
     {
         "city": "Santiago",
         "country": "Chile",
-        "would_return": "yes",
+        "author_would_return": "yes",
         "alternative_places": [],
         "food": [
             "Cazuela"
@@ -32,7 +32,7 @@
     {
         "city": "San Jose",
         "country": "Costa Rica",
-        "would_return": "yes",
+        "author_would_return": "yes",
         "alternative_places": [
             "Monteverde (cloud forest)",
             "Dominical (near Uvita, underrated)",
