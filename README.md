@@ -83,7 +83,7 @@ BRAINTRUST_API_KEY=your_braintrust_key_here
 
 ### Ingesting knowledge
 
-The server package includes a small ingest script for the destination memory corpus in `server/data/experience.json` when present. If that local file is missing, it falls back to the checked-in example at `server/data/experience.example.json`:
+The server package includes a ingest script for the destination memory corpus in `server/data/experience.json` when present. If that local file is missing, it falls back to the checked-in example at `server/data/experience.example.json`:
 
 ```bash
 cd server
