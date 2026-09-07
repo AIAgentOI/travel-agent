@@ -3,6 +3,7 @@ import { weather } from "./weather.js";
 import { attractions } from "./attractions.js";
 import { budget } from "./budget.js";
 import { createUpdateProfileTool, type SaveProfile } from "./profile.js";
+import { searchTravelKnowledge } from "./knowledge.js";
 
 // Factory so updateProfile can close over how the profile is persisted -
 // the chat route binds it to the authenticated user's Postgres row, evals
@@ -13,6 +14,7 @@ export function createTravelTools(saveProfile: SaveProfile) {
     weather,
     attractions,
     budget,
+    searchTravelKnowledge,
     updateProfile: createUpdateProfileTool(saveProfile),
   };
 }

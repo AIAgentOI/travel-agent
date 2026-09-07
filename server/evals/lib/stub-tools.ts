@@ -77,7 +77,16 @@ export function createStubTools(saveProfile: SaveProfile, options: StubToolOptio
   );
 
   // `budget` is a pure local calculator with no network call, so the real one runs.
-  return { ...real, geocode, weather, attractions };
+  const searchTravelKnowledge = withExecute(
+    real.searchTravelKnowledge,
+    async ({ query, destination }: { query: string; destination?: string; limit: number }) => ({
+      query,
+      results: [],
+      note: "No curated knowledge fixture for " + (destination ?? query) + "; use live tools for current information.",
+    }),
+  );
+
+  return { ...real, geocode, weather, attractions, searchTravelKnowledge };
 }
 
 /** Keeps a tool's description and input schema, replaces only its execute. */
