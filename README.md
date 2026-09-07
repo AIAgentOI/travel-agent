@@ -50,6 +50,7 @@ ui/             Vite + React chat UI
 | `attractions` | OpenStreetMap Overpass API (free, no key) |
 | `budget` | Built-in cost-of-living tier calculator (ground costs only, no flights) |
 | `updateProfile` | Saves budget style, interests, pace, and traveler count to Postgres so they're remembered next session |
+| `searchTravelKnowledge` | Hybrid RAG over curated traveler experiences using city lookups and OpenAI embeddings with pgvector |
 
 ## UI features
 
